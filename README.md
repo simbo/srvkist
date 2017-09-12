@@ -49,6 +49,8 @@ for ansible:
 ansible-playbook --user root first-run.yml
 ```
 
+You are now ready to use `playbook.yml`.
+
 
 ### Bootstrapping
 
@@ -56,12 +58,29 @@ ansible-playbook --user root first-run.yml
 ansible-playbook playbook.yml -t bootstrap
 ```
 
+  - Set hostname
+  - Update packages and set automatic unattended upgrades
+  - Add public ssh keys for ansible admin user
+  - Create SFTP group
+  - Install fail2ban
+  - Set iptables
+  - Disallow ssh access for root and disable password auth
+  - Delete root password
+  - Set local and timezone
+  - Install ntp
+  - Install optional packages defined in group_vars
+
 
 ### Setup nginx
 
 ``` sh
 ansible-playbook playbook.yml -t nginx
 ```
+
+  - Install nginx
+  - Copy nginx and sites configurations
+  - Ensure nginx cache and public html directory properties
+  - Remove default nginx site configuration
 
 
 ## Development
@@ -77,5 +96,5 @@ ansible-playbook -i vagrant <PLAYBOOK>
 
 ## License
 
-The MIT License (MIT)
+The MIT License (MIT)  
 Copyright © 2016 Simon Lepel <simbo@simbo.de>
