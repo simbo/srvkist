@@ -1,0 +1,5 @@
+vault_password_file
+*.retry
+*.log
+.vagrant
+vagrant

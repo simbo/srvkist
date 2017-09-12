@@ -1,0 +1,33 @@
+---
+
+- name: Create or update system user {{ user_login }}
+  user:
+    name: "{{ user_login }}"
+    password: "{{ user_password | password_hash('sha512') }}"
+    shell: /bin/bash
+    update_password: always
+
+- name: Set {{ user_login }}’s user directory permissions to 750
+  file:
+    path: /home/{{ user_login }}
+    state: directory
+    mode: 0750
+
+- name: Add authorized key to {{ user_login }} from {{ user_id_rsa_path }}
+  authorized_key:
+    user: "{{ user_login }}"
+    key: "{{ lookup('file', user_id_rsa_path) }}"
+
+- name: Add user {{ user_login }} to sudoers
+  lineinfile:
+    create: yes
+    dest: /etc/sudoers.d/10-{{ user_login }}
+    line: "{{ user_login }} ALL=(ALL) NOPASSWD:ALL"
+    state: present
+    validate: visudo -cf %s
+
+- name: Ensure user {{ user_login }} belongs to group www-data
+  user:
+    name: "{{ user_login }}"
+    groups: www-data
+    append: yes

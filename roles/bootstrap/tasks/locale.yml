@@ -1,0 +1,15 @@
+---
+
+- name: Set locale to {{ locale }}
+  locale_gen:
+    name: "{{ locale }}"
+    state: present
+
+- name: Set timezone to {{ timezone }}
+  timezone:
+    name: "{{ timezone }}"
+
+- name: Install ntp package
+  apt:
+    name: ntp
+    state: present

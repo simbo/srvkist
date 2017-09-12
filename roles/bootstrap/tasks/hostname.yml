@@ -1,0 +1,13 @@
+---
+- name: Set hostname to {{ hostname }}
+  hostname:
+    name: "{{ hostname }}"
+
+- name: Edit /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: ^127\.0\.0\.1
+    line: 127.0.0.1 localhost {{ hostname }}
+    owner: root
+    group: root
+    mode: 0644

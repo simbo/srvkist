@@ -1,0 +1,10 @@
+---
+
+- name: Update apt cache
+  raw: apt-get update -qq
+
+- name: Ensure python is installed
+  raw: test -e /usr/bin/python || apt-get install -y -qq python-minimal
+
+- name: Install aptitude
+  raw: apt-get install -y -qq aptitude

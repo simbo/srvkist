@@ -1,0 +1,13 @@
+---
+
+- name: Bootstrap server
+  hosts: all
+  become: yes
+
+  roles:
+
+    - role: bootstrap
+      tags: bootstrap
+
+    - role: nginx
+      tags: nginx

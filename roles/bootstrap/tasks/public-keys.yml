@@ -1,0 +1,10 @@
+---
+
+- name: Set up authorized keys for user {{ user_login }}
+  authorized_key:
+    user: "{{ user_login }}"
+    state: present
+    key: "{{ item }}"
+  with_file:
+    - templates/public-keys/simbo.pub
+    - templates/public-keys/sl_bytepark.pub

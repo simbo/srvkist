@@ -1,0 +1,44 @@
+---
+
+- name: Install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Copy nginx.conf
+  template:
+    src: templates/{{ item }}
+    dest: /etc/nginx/{{ item }}
+    mode: 0644
+  notify: restart nginx
+  with_items:
+    - nginx.conf
+    - secure.conf
+    - common.conf
+    - conf.d/srvkist.net.conf
+
+- name: Ensure nginx cache
+  file:
+    path: /var/cache/nginx
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+
+- name: Ensure web directory is owned by www-data
+  file:
+    path: /var/www
+    owner: www-data
+    group: www-data
+    state: directory
+    mode: 0775
+
+- name: Remove default nginx site config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: restart nginx
+
+# - name: Generate dhparam file
+#   # -dsaparm => https://goo.gl/OkbDqi for faster generation
+#   command: openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096 creates=/etc/ssl/certs/dhparam.pem

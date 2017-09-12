@@ -1,0 +1,7 @@
+---
+- name: First Run
+  hosts: all
+  gather_facts: false
+  become: yes
+  roles:
+    - first-run

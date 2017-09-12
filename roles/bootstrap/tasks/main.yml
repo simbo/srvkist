@@ -1,0 +1,25 @@
+---
+
+- include: hostname.yml
+  tags: hostname
+
+- include: apt.yml
+  tags: apt
+
+- include: public-keys.yml
+  tags: public-keys
+
+- include: sftp.yml
+  tags: sftp
+
+- include: secure.yml
+  tags: secure
+
+- include: iptables.yml
+  tags: iptables
+
+- include: locale.yml
+  tags: locale
+
+- include: packages.yml
+  tags: packages

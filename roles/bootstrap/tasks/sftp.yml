@@ -1,0 +1,6 @@
+---
+
+- name: Create group sftponly
+  group:
+    name: sftponly
+    state: present

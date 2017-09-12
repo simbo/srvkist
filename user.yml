@@ -1,0 +1,28 @@
+---
+- name: Add or update a system user
+  hosts: all
+  become: yes
+  roles:
+    - user
+
+  vars_prompt:
+
+    - name: user_login
+      prompt: Enter username
+      private: no
+
+    - name: user_password
+      prompt: Enter password
+      encrypt: md5_crypt
+      salt_size: 7
+      confirm: yes
+
+    - name: user_id_rsa_path
+      prompt: Enter id_rsa.pub path
+      default: ~/.ssh/id_rsa.pub
+      private: no
+
+    - name: sudoers
+      prompt: Add user to sudoers group (y/n)
+      default: "n"
+      private: no
