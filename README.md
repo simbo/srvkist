@@ -11,7 +11,8 @@ srvkist
 - [Usage](#usage)
   - [First Run](#first-run)
   - [Bootstrapping](#bootstrapping)
-  - [Setup nginx](#setup-nginx)
+  - [nginx](#nginx)
+  - [Docker](#docker)
 - [Development](#development)
 - [License](#license)
 
@@ -49,7 +50,7 @@ for ansible:
 ansible-playbook --user root first-run.yml
 ```
 
-You are now ready to use `playbook.yml`.
+You are now ready to use `playbook.yml` - all at once or by tags.
 
 
 ### Bootstrapping
@@ -71,7 +72,7 @@ ansible-playbook playbook.yml -t bootstrap
   - Install optional packages defined in group_vars
 
 
-### Setup nginx
+### nginx
 
 ``` sh
 ansible-playbook playbook.yml -t nginx
@@ -81,6 +82,15 @@ ansible-playbook playbook.yml -t nginx
   - Copy nginx and sites configurations
   - Ensure nginx cache and public html directory properties
   - Remove default nginx site configuration
+
+
+### Docker
+
+``` sh
+ansible-playbook playbook.yml -t docker
+```
+
+  - Install docker and docker-compose with required dependencies and apt sources
 
 
 ## Development
