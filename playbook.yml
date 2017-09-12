@@ -12,5 +12,8 @@
     - role: nginx
       tags: nginx
 
+    - role: letsencrypt
+      tags: letsencrypt
+
     - role: docker
       tags: docker

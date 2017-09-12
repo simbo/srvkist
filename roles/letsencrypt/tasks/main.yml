@@ -1,0 +1,30 @@
+---
+
+- name: Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - software-properties-common
+
+- name: Add ppa for certbot
+  apt_repository:
+    repo: ppa:certbot/certbot
+
+- name: Install certbot with nginx plugin and letsencrypt
+  apt:
+    name: python-certbot-nginx
+    update_cache: yes
+
+- name: Set cronjob for certbot auto-renew
+  cron:
+    name: daily auto renew cert
+    minute: 0
+    hour: 4
+    job: certbot renew \
+      --standalone \
+      --no-self-upgrade \
+      --post-hook "service nginx restart" \
+      --quiet
+    state: present
