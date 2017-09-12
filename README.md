@@ -12,8 +12,8 @@ srvkist
   - [First Run](#first-run)
   - [Bootstrapping](#bootstrapping)
   - [nginx](#nginx)
-  - [Docker](#docker)
   - [Letsencrypt](#letsencrypt)
+  - [Docker](#docker)
     - [Create certificates using certbot](#create-certificates-using-certbot)
 - [Development](#development)
 - [License](#license)
@@ -86,6 +86,16 @@ ansible-playbook playbook.yml -t nginx
   - Remove default nginx site configuration
 
 
+### Letsencrypt
+
+``` sh
+ansible-playbook playbook.yml -t letsencrypt
+```
+
+  - Install certbot and letsencrypt from `ppa:cerbot/certbot`
+  - Create cronjob for certbot auto-renewal of existing certificates
+
+
 ### Docker
 
 ``` sh
@@ -93,16 +103,6 @@ ansible-playbook playbook.yml -t docker
 ```
 
   - Install docker and docker-compose with required dependencies and apt sources
-
-
-### Letsencrypt
-
-``` sh
-ansible-playbook playbook.yml -t letsencrypt
-```
-
-  - Add `ppa:cerbot/certbot` and install cerbot and letsencrypt
-  - Create cronjob for certbot auto-renewal of existing certificates
 
 
 #### Create certificates using certbot

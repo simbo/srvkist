@@ -1,0 +1,7 @@
+---
+
+user_login: admin
+user_password: secret-password
+user_id_rsa_path: ~/.ssh/id_rsa.pub
+
+letsencrypt_email: foo@bar.com
