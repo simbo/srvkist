@@ -1,0 +1,12 @@
+---
+- name: Reboot system
+  hosts: all
+  become: yes
+  roles:
+    - reboot
+
+  vars_prompt:
+    - name: "reboot"
+      prompt: "Are you sure you want to reboot? (yes/no)"
+      private: no
+      default: "no"
