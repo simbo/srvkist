@@ -1,5 +1,10 @@
 ---
 
+- name: Install iptables-persistent
+  apt:
+    name: iptables-persistent
+    state: present
+
 - name: Copy iptables script
   template:
     src: iptables/iptables.sh
@@ -7,3 +12,10 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Run iptables script
+  shell: /root/iptables.sh
+
+- name: Save iptables
+  shell: iptables-save > /etc/iptables/rules.v4 && \
+    ip6tables-save > /etc/iptables/rules.v6

@@ -17,7 +17,7 @@ iptables -A OUTPUT -j ACCEPT
 ip6tables -A OUTPUT -j ACCEPT
 
 # allow access from all hosts to specific ports
-for $PORT in 22 80 443; do
+for PORT in 22 80 443; do
   iptables -A INPUT -p tcp -m state --state NEW,ESTABLISHED,RELATED --dport $PORT -j ACCEPT
   ip6tables -A INPUT -p tcp -m state --state NEW,ESTABLISHED,RELATED --dport $PORT -j ACCEPT
 done
