@@ -7,16 +7,18 @@
     update_cache: yes
 
 - name: Copy nginx.conf
+  tags: nginxconf
   template:
-    src: templates/{{ item }}
-    dest: /etc/nginx/{{ item }}
+    src: templates/nginx.conf
+    dest: /etc/nginx/nginx.conf
     mode: 0644
   notify: restart nginx
-  with_items:
-    - nginx.conf
-    - secure.conf
-    - common.conf
-    - conf.d/srvkist.net.conf
+
+- include: common-configs.yml
+  tags: nginxconf
+
+- include: site-configs.yml
+  tags: nginxconf
 
 - name: Ensure nginx cache
   file:
@@ -39,7 +41,3 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: restart nginx
-
-# - name: Generate dhparam file
-#   # -dsaparm => https://goo.gl/OkbDqi for faster generation
-#   command: openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096 creates=/etc/ssl/certs/dhparam.pem

@@ -1,0 +1,31 @@
+---
+
+- name: Get available site config templates
+  set_fact:
+    site_configs_item: "{{ item | basename }}"
+  with_fileglob: templates/conf.d/*.conf
+  register: site_configs
+
+- name: Transform results to list
+  set_fact:
+    site_configs: "{{ site_configs.results | map(attribute='ansible_facts.site_configs_item') | list }}"
+
+- name: Copy site configs
+  template:
+    src: templates/conf.d/{{ item }}
+    dest: /etc/nginx/conf.d/{{ item }}
+    mode: 0644
+  notify: restart nginx
+  with_items: "{{ site_configs }}"
+
+- name: Get available site configs
+  shell: ls -1 /etc/nginx/conf.d/*.conf | xargs -n 1 basename
+  register: site_configs_contents
+
+- name: Remove unmanaged site configs
+  file:
+    path: /etc/nginx/conf.d/{{ item }}
+    state: absent
+  notify: restart nginx
+  with_items: "{{ site_configs_contents.stdout_lines }}"
+  when: item not in site_configs

@@ -1,0 +1,38 @@
+---
+
+- name: Get available common config templates
+  set_fact:
+    common_configs_item: "{{ item | basename }}"
+  with_fileglob: templates/common/*.conf
+  register: common_configs
+
+- name: Transform results to list
+  set_fact:
+    common_configs: "{{ common_configs.results | map(attribute='ansible_facts.common_configs_item') | list }}"
+
+- name: Ensure directory for common configs exists
+  file:
+    path: /etc/nginx/common
+    state: directory
+    mode: 0755
+  notify: restart nginx
+
+- name: Copy common configs
+  template:
+    src: templates/common/{{ item }}
+    dest: /etc/nginx/common/{{ item }}
+    mode: 0644
+  notify: restart nginx
+  with_items: "{{ common_configs }}"
+
+- name: Get available common configs
+  shell: ls -1 /etc/nginx/common/*.conf | xargs -n 1 basename
+  register: common_configs_contents
+
+- name: Remove unmanaged common configs
+  file:
+    path: /etc/nginx/common/{{ item }}
+    state: absent
+  notify: restart nginx
+  with_items: "{{ common_configs_contents.stdout_lines }}"
+  when: item not in common_configs
