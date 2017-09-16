@@ -17,6 +17,10 @@
     name: python-certbot-nginx
     update_cache: yes
 
+- name: Generate dhparam file
+  # dsaparam for faster generation (https://security.stackexchange.com/a/95184)
+  command: openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096 creates=/etc/ssl/certs/dhparam.pem
+
 - name: Set cronjob for certbot auto-renew
   cron:
     name: daily auto renew cert
