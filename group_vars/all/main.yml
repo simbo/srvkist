@@ -9,3 +9,7 @@ packages:
 
 locale: de_DE.UTF-8
 timezone: Europe/Berlin
+
+letsencrypt_domains:
+  - srvkist.net,www.srvkist.net
+  - chat.srvkist.net

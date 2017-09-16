@@ -21,6 +21,16 @@
   # dsaparam for faster generation (https://security.stackexchange.com/a/95184)
   command: openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096 creates=/etc/ssl/certs/dhparam.pem
 
+- name: Generate certificates
+  command: certbot certonly \
+    --standalone \
+    --non-interactive \
+    --agree-tos \
+    --email {{ letsencrypt_email }} \
+    --domains {{ item }}
+  notify: restart nginx
+  with_items: "{{ letsencrypt_domains }}"
+
 - name: Set cronjob for certbot auto-renew
   cron:
     name: daily auto renew cert
@@ -29,6 +39,6 @@
     job: certbot renew \
       --standalone \
       --no-self-upgrade \
-      --post-hook "service nginx restart" \
+      --post-hook "service nginx reload" \
       --quiet
     state: present
