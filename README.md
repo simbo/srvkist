@@ -13,8 +13,8 @@ srvkist
   - [Bootstrapping](#bootstrapping)
   - [nginx](#nginx)
   - [Letsencrypt](#letsencrypt)
-  - [Docker](#docker)
     - [Create certificates using certbot](#create-certificates-using-certbot)
+  - [Docker](#docker)
 - [Development](#development)
 - [License](#license)
 
@@ -54,6 +54,10 @@ ansible-playbook --user root first-run.yml
 
 You are now ready to use `playbook.yml` - all at once or by tags.
 
+See `./group_vars/all/` for common task settings.  
+Also take a look at the file templates in `templates/` within the respective
+roles directory.
+
 
 ### Bootstrapping
 
@@ -61,17 +65,19 @@ You are now ready to use `playbook.yml` - all at once or by tags.
 ansible-playbook playbook.yml -t bootstrap
 ```
 
+… will run the following tasks:
+
   - Set hostname
   - Update packages and set automatic unattended upgrades
-  - Add public ssh keys for ansible admin user
+  - Add public ssh keys for ansible/admin user (see `./roles/bootstrap/templates/public-keys/`)
   - Create SFTP group
-  - Install fail2ban
-  - Set iptables
+  - Setup fail2ban
+  - Set iptables (see `./roles/bootstrap/templates/iptables/iptables.sh`)
   - Disallow ssh access for root and disable password auth
   - Delete root password
-  - Set local and timezone
-  - Install ntp
-  - Install optional packages defined in group_vars
+  - Set locale and timezone
+  - Setup ntp for time sync
+  - Install optional packages
 
 
 ### nginx
@@ -80,8 +86,10 @@ ansible-playbook playbook.yml -t bootstrap
 ansible-playbook playbook.yml -t nginx
 ```
 
+… will run the following tasks:
+
   - Install nginx
-  - Copy nginx and sites configurations
+  - Copy nginx and sites configurations (see `./roles/nginx/templates/`)
   - Ensure nginx cache and public html directory properties
   - Remove default nginx site configuration
 
@@ -92,17 +100,10 @@ ansible-playbook playbook.yml -t nginx
 ansible-playbook playbook.yml -t letsencrypt
 ```
 
+… will run the following tasks:
+
   - Install certbot and letsencrypt from `ppa:cerbot/certbot`
   - Create cronjob for certbot auto-renewal of existing certificates
-
-
-### Docker
-
-``` sh
-ansible-playbook playbook.yml -t docker
-```
-
-  - Install docker and docker-compose with required dependencies and apt sources
 
 
 #### Create certificates using certbot
@@ -112,6 +113,17 @@ Create a certificate for one or more domains using certbot:
 ``` sh
 ansible-playbook cert.yml
 ```
+
+
+### Docker
+
+``` sh
+ansible-playbook playbook.yml -t docker
+```
+
+… will run the following tasks:
+
+  - Install docker and docker-compose with required dependencies and apt sources
 
 
 ## Development
