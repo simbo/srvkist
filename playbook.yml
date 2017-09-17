@@ -1,6 +1,6 @@
 ---
 
-- name: Bootstrap server
+- name: Common playbook
   hosts: all
   become: yes
 
@@ -9,11 +9,11 @@
     - role: bootstrap
       tags: bootstrap
 
-    - role: nginx
-      tags: nginx
-
     - role: letsencrypt
       tags: letsencrypt
+
+    - role: nginx
+      tags: nginx
 
     - role: docker
       tags: docker
