@@ -1,4 +1,5 @@
 ---
+
 - name: Reboot system
   hosts: all
   become: yes
