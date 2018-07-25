@@ -41,3 +41,12 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify: restart nginx
+
+- name: Remove default htdocs
+  file:
+    path: /var/www/html
+    state: absent
+
+- name: Generate dhparam file
+  # diffie-hellman param for faster generation (https://security.stackexchange.com/a/95184)
+  command: openssl dhparam -dsaparam -out /etc/ssl/certs/dhparam.pem 4096 creates=/etc/ssl/certs/dhparam.pem
