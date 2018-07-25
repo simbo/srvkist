@@ -23,6 +23,6 @@ packages:
 locale: de_DE.UTF-8
 timezone: Europe/Berlin
 
-letsencrypt_domains:
-  - srvkist.net,www.srvkist.net
-  - chat.srvkist.net
+# api provider for letsencrypt dns acme
+# https://github.com/Neilpang/acme.sh/tree/master/dnsapi
+acme_dns_api: dns_inwx

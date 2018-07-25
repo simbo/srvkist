@@ -9,8 +9,8 @@
     - role: bootstrap
       tags: bootstrap
 
-    - role: letsencrypt
-      tags: letsencrypt
+    - role: acme-sh
+      tags: acme-sh
 
     - role: nginx
       tags: nginx

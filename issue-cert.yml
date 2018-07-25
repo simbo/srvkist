@@ -1,0 +1,13 @@
+---
+- name: Issue a letsencrypt cert using acme.sh
+  hosts: all
+  become: yes
+  roles:
+    - acme-sh_issue-cert
+
+  vars_prompt:
+
+    - name: domain
+      prompt: Domain
+      private: no
+

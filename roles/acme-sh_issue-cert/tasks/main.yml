@@ -1,0 +1,22 @@
+---
+
+- name: Ensure folder for domain certificates exists
+  file:
+    path: /etc/ssl/domains/{{ domain }}
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: Issue certificates for domain {{ domain }} (takes some time)
+  environment: "{{ acme_dns_credentials }}"
+  command: ~/.acme.sh/acme.sh --issue \
+    --domain {{ domain }} \
+    --domain "*.{{ domain }}" \
+    --dns {{ acme_dns_api }} \
+    --keylength 4096 \
+    --key-file /etc/ssl/domains/{{ domain }}/privkey.pem \
+    --fullchain-file /etc/ssl/domains/{{ domain }}/fullchain.pem \
+    --reloadcmd "systemctl restart nginx"
+    # --debug
+    # --force

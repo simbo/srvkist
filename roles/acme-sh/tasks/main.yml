@@ -1,0 +1,25 @@
+---
+
+- name: Test if acme.sh is installed
+  stat:
+    path: ~/.acme.sh
+  register: stat_acme
+
+- name: Install acme.sh
+  when: stat_acme.stat.exists == False
+  command: bash -c "curl https://get.acme.sh | sh"
+
+- name: Upgrade acme.sh
+  when: stat_acme.stat.exists == True
+  command: ~/.acme.sh/acme.sh --upgrade
+
+- name: Set letsencrypt account email for notifications
+  command: ~/.acme.sh/acme.sh --updateaccount --accountemail "{{ admin_email }}"
+
+- name: Ensure folder for certificates exists
+  file:
+    path: /etc/ssl/domains
+    owner: root
+    group: root
+    mode: 0755
+    state: directory

@@ -3,4 +3,11 @@
 # admin user password
 admin_password: secret-password
 
-letsencrypt_email: foo@bar.com
+# admin email for i.e. letsencrypt notifications
+admin_email: foo@bar.com
+
+# https://github.com/Neilpang/acme.sh/tree/master/dnsapi
+acme_dns_credentials:
+  INWX_User: username
+  INWX_Password: secret-password
+  INWX_Shared_Secret:
