@@ -175,9 +175,11 @@ You can use vargrant to create a virtual server for testing and development.
 
 ``` sh
 vagrant up
-ln -s .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory vagrant
-ansible-playbook -i vagrant <PLAYBOOK>
+ln -s .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory vagranthosts
+ansible-playbook -i vagranthosts <PLAYBOOK> [-t <TAG>]
 ```
+
+Calling `vagrant up` will automatically use `first-run-yml` for provisioning.
 
 
 ## License
