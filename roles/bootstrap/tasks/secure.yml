@@ -5,7 +5,7 @@
     name: fail2ban
     state: present
 
-- name: Disallow password authentication
+- name: Disallow password authentication for all users
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: ^PasswordAuthentication

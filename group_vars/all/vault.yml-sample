@@ -1,7 +1,6 @@
 ---
 
-user_login: admin
-user_password: secret-password
-user_id_rsa_path: ~/.ssh/id_rsa.pub
+# admin user password
+admin_password: secret-password
 
 letsencrypt_email: foo@bar.com

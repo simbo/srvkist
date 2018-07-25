@@ -13,11 +13,11 @@
     state: directory
     mode: 0750
 
-- name: Add authorized key to {{ user_login }} from {{ user_id_rsa_path }}
+- name: Add authorized key to {{ user_login }} from {{ user_key_path }}
   authorized_key:
     user: "{{ user_login }}"
-    key: "{{ lookup('file', user_id_rsa_path) }}"
-  when: user_id_rsa_path is defined
+    key: "{{ lookup('file', user_key_path) }}"
+  when: user_key_path is defined
 
 - name: Add user {{ user_login }} to sudoers
   lineinfile:

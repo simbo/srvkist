@@ -1,33 +1,35 @@
 ---
 
-- name: Create or update system user {{ user_login }}
+- name: Create or update system user {{ admin_login }}
   user:
-    name: "{{ user_login }}"
-    password: "{{ user_password | password_hash('sha512') }}"
+    name: "{{ admin_login }}"
+    password: "{{ admin_password | password_hash('sha512') }}"
     shell: /bin/bash
     update_password: always
 
-- name: Set {{ user_login }}’s user directory permissions to 750
+- name: Set {{ admin_login }}’s user directory permissions to 750
   file:
-    path: /home/{{ user_login }}
+    path: /home/{{ admin_login }}
     state: directory
     mode: 0750
 
-- name: Add authorized key to {{ user_login }} from {{ user_id_rsa_path }}
+- name: Add authorized key to {{ admin_login }} from {{ user_key_path }}
   authorized_key:
-    user: "{{ user_login }}"
-    key: "{{ lookup('file', user_id_rsa_path) }}"
+    user: "{{ admin_login }}"
+    key: "{{ lookup('file', item) }}"
+    state: present
+  with_items: "{{ admin_authorized_keys }}"
 
-- name: Add user {{ user_login }} to sudoers
+- name: Add {{ admin_login }} to sudoers
   lineinfile:
     create: yes
-    dest: /etc/sudoers.d/10-{{ user_login }}
-    line: "{{ user_login }} ALL=(ALL) NOPASSWD:ALL"
+    dest: /etc/sudoers.d/10-{{ admin_login }}
+    line: "{{ admin_login }} ALL=(ALL) NOPASSWD:ALL"
     state: present
     validate: visudo -cf %s
 
-- name: Ensure user {{ user_login }} belongs to group www-data
+- name: Ensure {{ admin_login }} belongs to group www-data
   user:
-    name: "{{ user_login }}"
+    name: "{{ admin_login }}"
     groups: www-data
     append: yes

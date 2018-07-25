@@ -17,7 +17,7 @@
       salt_size: 7
       confirm: yes
 
-    - name: user_id_rsa_path
+    - name: user_key_path
       prompt: Enter id_rsa.pub path
       default: ~/.ssh/id_rsa.pub
       private: no

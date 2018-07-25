@@ -1,12 +1,25 @@
 ---
 
+# server hostname
 hostname: srvkist
 
+# if you change the admin login, also edit ./ansible.cfg
+admin_login: admin
+
+# authorized ssh keys for admin user
+admin_authorized_keys:
+  - ~/.ssh/id_rsa.pub
+  - ~/.ssh/simbo_id_rsa.pub
+
+# optional packages to install
 packages:
   - vim
   - nano
   - htop
+  - curl
+  - git
 
+# localization
 locale: de_DE.UTF-8
 timezone: Europe/Berlin
 
