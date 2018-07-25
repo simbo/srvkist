@@ -8,16 +8,18 @@ srvkist
 <!-- TOC -->
 
 - [Requirements](#requirements)
-- [Usage](#usage)
+- [Preparations](#preparations)
   - [First Run](#first-run)
-  - [Bootstrapping](#bootstrapping)
-  - [Letsencrypt](#letsencrypt)
-    - [Creating certificates](#creating-certificates)
-  - [nginx](#nginx)
-    - [Update configs only](#update-configs-only)
-  - [Docker](#docker)
-  - [Create user](#create-user)
-  - [Reboot](#reboot)
+- [Usage](#usage)
+  - [Playbook `setup.yml`](#playbook-setupyml)
+    - [Tag `bootstrap`](#tag-bootstrap)
+    - [Tag `acme-sh`](#tag-acme-sh)
+    - [Tag `nginx`](#tag-nginx)
+    - [Tag `nginxconf`](#tag-nginxconf)
+    - [Tag `docker`](#tag-docker)
+  - [Playbook `issue-cert.yml`](#playbook-issue-certyml)
+  - [Playbook `user.yml`](#playbook-useryml)
+  - [Playbook `reboot.yml`](#playbook-rebootyml)
 - [Development](#development)
 - [License](#license)
 
@@ -28,145 +30,161 @@ srvkist
 
 ## Requirements
 
-  - [ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)
+  - [ansible](http://docs.ansible.com/ansible/latest/intro_installation.html)  
+    Install via pip: `sudo easy_install pip && sudo pip install ansible`
+
+  - `passlib` for creating hashes with ansible  
+    Install via pip: `sudo pip install passlib`
+
+  - [vagrant](https://www.vagrantup.com/downloads.html) and
+    [VirtualBox](https://www.virtualbox.org/wiki/Downloads)  
+    (if you want to run playbooks against a local vm for development)
 
 
-## Usage
+## Preparations
+
+We're assuming, you have just set up a server with **Ubuntu 18.04 LTS** minimum
+installation and you have root access using ssh (password or keyfile)
+
+Edit the project files according to your needs:
+
+  - Edit `./hosts` to match your server ip and port.
+
+  - Create `vault_password_file` containing the password for ansible vault:
+
+    ``` sh
+    echo -n "secret-password" > vault_password_file
+    ```
+
+  - Edit settings in `./group_vars/all` if necessary
 
 
 ### First Run
 
-We're assuming, you have just set up a server with Ubuntu Server 16.04 minimum
-installation. There is `openssh-server` installed and you have root access using
-a ssh key.
-
-Edit `./hosts` to match your server ip and port.
-
-Create `vault_password_file` containing the password for ansible vault:
-
-``` sh
-echo -n "secret-password" > vault_password_file
-```
-
 Run `first-run.yml` to install minimum requirements and create the admin user
-for ansible:
+for ansible. This is the only playbook that uses the root user. Specify keyfile
+or password if necessary:
 
 ``` sh
-ansible-playbook --user root first-run.yml
+ansible-playbook --user root [--ask-pass] [--key-file path/to/id] first-run.yml
 ```
 
-You are now ready to use `playbook.yml` - all at once or by tags.
 
-See `./group_vars/` for common task settings.  
-Also take a look at the file templates in `templates/` within the respective
-roles directory.
-
-
-### Bootstrapping
+## Usage
 
 ``` sh
-ansible-playbook playbook.yml -t bootstrap
+ansible-playbook <PLAYBOOK> [-t <TAG>]
 ```
 
-… will run the following tasks:
+See `./group_vars/` for common task settings.
 
-  - Set hostname from `group_vars`
-  - Update packages and set automatic unattended upgrades
-  - Add public ssh keys for ansible/admin user (see `./roles/bootstrap/templates/public-keys/`)
-  - Create SFTP group
-  - Setup fail2ban
-  - Set iptables rules and automatically restore them
-    (see `./roles/bootstrap/templates/iptables/iptables.sh`)
-  - Disallow ssh access for root and disable password auth
-  - Delete root password
-  - Set locale and timezone from `group_vars`
-  - Setup ntp for time sync
-  - Install optional packages from `group_vars`
+Read through playbooks and tasks. They are self-explaining.
 
 
-### Letsencrypt
+### Playbook `setup.yml`
+
+Runs all tags by order:
 
 ``` sh
-ansible-playbook playbook.yml -t letsencrypt
+ansible-playbook setup.yml
 ```
 
-… will run the following tasks:
 
-  - Install certbot and letsencrypt from `ppa:cerbot/certbot`
-  - Instruct openssl to produce "dsa-like" dhparams
-    [security.stackexchange.com/a/95184](https://security.stackexchange.com/a/95184)
-  - Create certificates for domains from `group_vars`
-  - Create cronjob for certbot auto-renewal of existing certificates
-
-
-#### Creating certificates
-
-Add domains to the `letsencrypt_domains` list in `group_vars` to
-create certificates when running the letsencrypt playbook tasks.
-
-**Or** manually create a certificate for one or more domains using certbot:
+#### Tag `bootstrap`
 
 ``` sh
-ansible-playbook cert.yml
+ansible-playbook setup.yml -t bootstrap
 ```
 
-However they were created, generated certificates will be automatically renewed.
+Changes:
+
+  - set the hostname
+  - update apt package cache; upgrade apt to the latest packages; install
+    unattended-upgrades package; adjust apt update intervals; only installs from
+    security channel
+  - create `sftponly` group
+  - setup iptables (see `./roles/bootstrap/templates/iptables/iptables.sh`)
+  - setup fail2ban
+  - disallow password authentication for all users; disallow ssh access for
+    root; delete root password
+  - set locale and timezone
+  - setup ntp
+  - install optional packages
 
 
-### nginx
+#### Tag `acme-sh`
 
 ``` sh
-ansible-playbook playbook.yml -t nginx
+ansible-playbook setup.yml -t acme-sh
 ```
 
-… will run the following tasks:
-
-  - Install nginx
-  - Copy nginx.conf, common configs and sites configs (see `./roles/nginx/templates/`)
-  - Remove unmanaged configs
-  - Ensure nginx cache and public html directory properties
-  - Remove default nginx site configuration
+  - setup acme.sh for letsencrypt certificate creation and renewal
+  - set letsencrypt account email for notifications
 
 
-#### Update configs only
+#### Tag `nginx`
 
 ``` sh
-ansible-playbook playbook.yml -t nginxconf
+ansible-playbook setup.yml -t nginx
 ```
 
-… will run the following tasks:
+Changes:
 
-  - Copy nginx.conf, common configs and sites configs (see `./roles/nginx/templates/`)
-  - Remove unmanaged configs
+  - install nginx
+  - copy nginx.conf, common configs and sites configs (see `./roles/nginx/templates/`)
+  - remove unmanaged configs
+  - ensure nginx cache and public html directory properties
+  - remove default nginx site configuration
 
 
-### Docker
+#### Tag `nginxconf`
 
 ``` sh
-ansible-playbook playbook.yml -t docker
+ansible-playbook setup.yml -t nginxconf
 ```
 
-… will run the following tasks:
+Changes:
 
-  - Install docker and docker-compose with required dependencies and apt sources
+  - copy nginx.conf, common configs and sites configs (see `./roles/nginx/templates/`)
+  - remove unmanaged configs
 
 
-### Create user
+#### Tag `docker`
+
+``` sh
+ansible-playbook setup.yml -t docker
+```
+
+Changes:
+
+  - iXnstall docker and docker-compose with required dependencies and apt sources
+
+
+### Playbook `issue-cert.yml`
+
+``` sh
+ansible-playbook issue-cert.yml
+```
+
+Issue a certificate using acme.sh for prompted domain (also cares for renewal).
+
+
+### Playbook `user.yml`
 
 ``` sh
 ansible-playbook user.yml
 ```
 
-… will prompt for options and create a system user.
+Create a system user from prompted options.
 
 
-### Reboot
+### Playbook `reboot.yml`
 
 ``` sh
 ansible-playbook reboot.yml
 ```
 
-… will reboot the system and wait for it to come back.
+Reboot the system and wait for it to come back.
 
 
 ## Development
